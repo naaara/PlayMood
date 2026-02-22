@@ -10,7 +10,7 @@ export default function App() {
   }
 
   function mostrarMensagem() {
-    Alert.alert("Funcionando 🎉", "Seu app está rodando perfeitamente!");
+    Alert.alert("Finalmente o app deu certo mdssss 🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉");
   }
 
   return (
