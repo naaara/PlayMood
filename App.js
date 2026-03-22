@@ -6,39 +6,120 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
+  Linking,
 } from 'react-native';
+
+const recomendacoes = {
+  feliz: {
+    emoji: '😄',
+    mensagem: 'Seu dia já está bom, então aproveite algo leve e divertido!',
+    musicas: [
+      { nome: 'Happy – Pharrell Williams', url: 'https://www.youtube.com/watch?v=ZbZSe6N_BXs' },
+      { nome: 'Can\'t Stop the Feeling – Justin Timberlake', url: 'https://www.youtube.com/watch?v=ru0K8uYEZWw' },
+      { nome: 'Good as Hell – Lizzo', url: 'https://www.youtube.com/watch?v=SmbmeOgWsqE' },
+      { nome: 'Levitating – Dua Lipa', url: 'https://www.youtube.com/watch?v=TUVcZfQe-Kw' },
+      { nome: 'Walking on Sunshine – Katrina', url: 'https://www.youtube.com/watch?v=iPUmE-tne5U' },
+    ],
+    filmes: [
+      'Divertida Mente',
+      'Se Beber, Não Case',
+      'O Máskara',
+      'Mamma Mia',
+      'SuperBad',
+    ],
+  },
+  triste: {
+    emoji: '😢',
+    mensagem: 'Tudo bem ter dias difíceis. Escolha algo que acolha seu momento.',
+    musicas: [
+      { nome: 'Someone Like You – Adele', url: 'https://www.youtube.com/watch?v=hLQl3WQQoQ0' },
+      { nome: 'Fix You – Coldplay', url: 'https://www.youtube.com/watch?v=k4V3Mo61fJM' },
+      { nome: 'Let Her Go – Passenger', url: 'https://www.youtube.com/watch?v=RBumgq5yVrA' },
+      { nome: 'The Night We Met – Lord Huron', url: 'https://www.youtube.com/watch?v=KtlgYxa6BMU' },
+      { nome: 'Skinny Love – Bon Iver', url: 'https://www.youtube.com/watch?v=ssdgFoHLwnk' },
+    ],
+    filmes: [
+      'Diário de uma Paixão',
+      'Ela',
+      'Minhas Mães e Meu Pai',
+      'A Culpa é das Estrelas',
+      'Manchester à Beira-Mar',
+    ],
+  },
+  animado: {
+    emoji: '🔥',
+    mensagem: 'Você está com energia! Aproveite algo intenso e empolgante.',
+    musicas: [
+      { nome: 'Blinding Lights – The Weeknd', url: 'https://www.youtube.com/watch?v=4NRXx6U8ABQ' },
+      { nome: 'SICKO MODE – Travis Scott', url: 'https://www.youtube.com/watch?v=6ONRf7h3Mdk' },
+      { nome: 'Lose Yourself – Eminem', url: 'https://www.youtube.com/watch?v=_Yhyp-_hX2s' },
+      { nome: 'Rockstar – DaBaby', url: 'https://www.youtube.com/watch?v=rogyNBCB1E4' },
+      { nome: 'Till I Collapse – Eminem', url: 'https://www.youtube.com/watch?v=ytQ5MemKTMY' },
+    ],
+    filmes: [
+      'Mad Max: Estrada da Fúria',
+      'John Wick',
+      'Homem-Aranha no Aranhaverso',
+      'Top Gun: Maverick',
+      'Vingadores: Ultimato',
+    ],
+  },
+  calmo: {
+    emoji: '🌙',
+    mensagem: 'Hoje combina com paz, conforto e tranquilidade.',
+    musicas: [
+      { nome: 'Clair de Lune – Debussy', url: 'https://www.youtube.com/watch?v=CvFH_6DNRCY' },
+      { nome: 'Sunset Lover – Petit Biscuit', url: 'https://www.youtube.com/watch?v=NhPBMbJv1zs' },
+      { nome: 'Weightless – Marconi Union', url: 'https://www.youtube.com/watch?v=UfcAVejslrU' },
+      { nome: 'Experience – Ludovico Einaudi', url: 'https://www.youtube.com/watch?v=hN_q-_nGv4U' },
+      { nome: 'Lo-Fi Hip Hop Radio', url: 'https://www.youtube.com/watch?v=jfKfPfyJRdk' },
+    ],
+    filmes: [
+      'A Vida Secreta de Walter Mitty',
+      'Chegada',
+      'Ilha das Flores',
+      'Meu Vizinho Totoro',
+      'Encontros e Desencontros',
+    ],
+  },
+};
+
+function sortearSemRepetir(lista, ultimoIndex) {
+  if (lista.length === 1) return 0;
+  let novo;
+  do {
+    novo = Math.floor(Math.random() * lista.length);
+  } while (novo === ultimoIndex);
+  return novo;
+}
 
 export default function App() {
   const [humorSelecionado, setHumorSelecionado] = useState('');
-  const [musica, setMusica] = useState('');
+  const [musica, setMusica] = useState(null);
   const [filme, setFilme] = useState('');
   const [mensagem, setMensagem] = useState('');
 
-  function recomendar(humor) {
-    setHumorSelecionado(humor);
+  // Guarda o último índice usado por humor
+  const [ultimosIndices, setUltimosIndices] = useState({
+    feliz: -1, triste: -1, animado: -1, calmo: -1,
+  });
 
-    if (humor === 'feliz') {
-      setMusica('Pop alegre ou playlist animada');
-      setFilme('Comédia ou animação divertida');
-      setMensagem('Seu dia já está bom, então aproveite algo leve e divertido!');
-    } else if (humor === 'triste') {
-      setMusica('Música calma ou acústica');
-      setFilme('Drama emocionante ou filme reconfortante');
-      setMensagem('Tudo bem ter dias difíceis. Escolha algo que acolha seu momento.');
-    } else if (humor === 'animado') {
-      setMusica('Eletrônica, funk, pop ou música para dançar');
-      setFilme('Ação, aventura ou super-herói');
-      setMensagem('Você está com energia! Aproveite algo intenso e empolgante.');
-    } else if (humor === 'calmo') {
-      setMusica('Lo-fi, instrumental ou acústica suave');
-      setFilme('Romance leve, drama tranquilo ou natureza');
-      setMensagem('Hoje combina com paz, conforto e tranquilidade.');
-    }
+  function recomendar(humor) {
+    const dados = recomendacoes[humor];
+
+    const iMusica = sortearSemRepetir(dados.musicas, ultimosIndices[humor]);
+    const iFilme = Math.floor(Math.random() * dados.filmes.length);
+
+    setHumorSelecionado(humor);
+    setMusica(dados.musicas[iMusica]);
+    setFilme(dados.filmes[iFilme]);
+    setMensagem(dados.mensagem);
+    setUltimosIndices(prev => ({ ...prev, [humor]: iMusica }));
   }
 
   function limpar() {
     setHumorSelecionado('');
-    setMusica('');
+    setMusica(null);
     setFilme('');
     setMensagem('');
   }
@@ -50,49 +131,44 @@ export default function App() {
         Escolha como você está se sentindo hoje:
       </Text>
 
-      <TouchableOpacity
-        style={styles.botao}
-        onPress={() => recomendar('feliz')}
-      >
-        <Text style={styles.textoBotao}>Feliz 😄</Text>
-      </TouchableOpacity>
+      {Object.entries(recomendacoes).map(([humor, dados]) => (
+        <TouchableOpacity
+          key={humor}
+          style={[styles.botao, humorSelecionado === humor && styles.botaoAtivo]}
+          onPress={() => recomendar(humor)}
+        >
+          <Text style={styles.textoBotao}>
+            {dados.emoji} {humor.charAt(0).toUpperCase() + humor.slice(1)}
+          </Text>
+        </TouchableOpacity>
+      ))}
 
-      <TouchableOpacity
-        style={styles.botao}
-        onPress={() => recomendar('triste')}
-      >
-        <Text style={styles.textoBotao}>Triste 😢</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.botao}
-        onPress={() => recomendar('animado')}
-      >
-        <Text style={styles.textoBotao}>Animado 🔥</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.botao}
-        onPress={() => recomendar('calmo')}
-      >
-        <Text style={styles.textoBotao}>Calmo 🌙</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[styles.botao, styles.botaoLimpar]}
-        onPress={limpar}
-      >
+      <TouchableOpacity style={[styles.botao, styles.botaoLimpar]} onPress={limpar}>
         <Text style={styles.textoBotao}>Limpar</Text>
       </TouchableOpacity>
 
-      {humorSelecionado !== '' && (
+      {humorSelecionado !== '' && musica && (
         <View style={styles.caixaResultado}>
           <Text style={styles.resultadoTitulo}>
-            Resultado para: {humorSelecionado}
+            {recomendacoes[humorSelecionado].emoji} Humor: {humorSelecionado}
           </Text>
-          <Text style={styles.resultadoTexto}>🎵 Música: {musica}</Text>
-          <Text style={styles.resultadoTexto}>🎬 Filme: {filme}</Text>
+
+          <Text style={styles.label}>🎵 Música sugerida:</Text>
+          <TouchableOpacity onPress={() => Linking.openURL(musica.url)}>
+            <Text style={styles.link}>{musica.nome}</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.label}>🎬 Filme sugerido:</Text>
+          <Text style={styles.resultadoTexto}>{filme}</Text>
+
           <Text style={styles.mensagem}>{mensagem}</Text>
+
+          <TouchableOpacity
+            style={styles.botaoNovamente}
+            onPress={() => recomendar(humorSelecionado)}
+          >
+            <Text style={styles.textoBotaoNovamente}>🔀 Outra sugestão</Text>
+          </TouchableOpacity>
         </View>
       )}
 
@@ -110,16 +186,16 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   titulo: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
     color: '#2b2d42',
-    marginBottom: 10,
+    marginBottom: 6,
     textAlign: 'center',
   },
   subtitulo: {
     fontSize: 16,
     color: '#555',
-    marginBottom: 20,
+    marginBottom: 24,
     textAlign: 'center',
   },
   botao: {
@@ -129,6 +205,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 12,
     alignItems: 'center',
+  },
+  botaoAtivo: {
+    backgroundColor: '#3c096c',
+    borderWidth: 2,
+    borderColor: '#e0aaff',
   },
   botaoLimpar: {
     backgroundColor: '#d00000',
@@ -151,19 +232,44 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: '#2b2d42',
-    marginBottom: 10,
+    marginBottom: 14,
     textAlign: 'center',
   },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginTop: 8,
+    marginBottom: 2,
+  },
+  link: {
+    fontSize: 16,
+    color: '#5a189a',
+    textDecorationLine: 'underline',
+    marginBottom: 10,
+  },
   resultadoTexto: {
-    fontSize: 17,
+    fontSize: 16,
     color: '#333',
     marginBottom: 8,
   },
   mensagem: {
-    marginTop: 10,
-    fontSize: 16,
+    marginTop: 12,
+    fontSize: 15,
     color: '#444',
     fontStyle: 'italic',
     textAlign: 'center',
+  },
+  botaoNovamente: {
+    marginTop: 16,
+    backgroundColor: '#e0aaff',
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  textoBotaoNovamente: {
+    color: '#3c096c',
+    fontWeight: 'bold',
+    fontSize: 15,
   },
 });
