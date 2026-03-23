@@ -159,18 +159,15 @@ function TelaInicio({ onNavegar }) {
     // Animated.View permite aplicar animações ao container
     <Animated.View style={[s.telaInicio, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
 
-      {}
       <View style={s.headerGlowContainer}>
-        {}
         <View style={s.headerGlow} />
         <Text style={s.appTitulo}>MoodPlay</Text>
         <Text style={s.appSubtitulo}>Música e filmes para cada momento seu</Text>
       </View>
 
-      {}
       <View style={s.menuContainer}>
 
-        {/* Botão: Como estou me sentindo(vai para tela de humor) */}
+        {/* Botão: Como estou me sentindo (vai para tela de humor) */}
         <TouchableOpacity style={s.menuBotao} onPress={() => onNavegar('humor')} activeOpacity={0.8}>
           <View style={[s.menuIcone, { backgroundColor: C.roxo + '33' }]}>
             <Text style={s.menuIconeEmoji}>🎵</Text>
@@ -182,7 +179,7 @@ function TelaInicio({ onNavegar }) {
           <Text style={s.menuSeta}>›</Text>
         </TouchableOpacity>
 
-        {/* Botão: Sugerir música/filme(vai para tela de sugestão) */}
+        {/* Botão: Sugerir música/filme (vai para tela de sugestão) */}
         <TouchableOpacity style={s.menuBotao} onPress={() => onNavegar('sugestao')} activeOpacity={0.8}>
           <View style={[s.menuIcone, { backgroundColor: C.rosa + '33' }]}>
             <Text style={s.menuIconeEmoji}>💌</Text>
@@ -193,7 +190,6 @@ function TelaInicio({ onNavegar }) {
           </View>
           <Text style={s.menuSeta}>›</Text>
         </TouchableOpacity>
-
 
       </View>
     </Animated.View>
@@ -380,7 +376,7 @@ function TelaHumor({ onVoltar }) {
           {/* Botão para sortear outra sugestão sem mudar o humor */}
           <TouchableOpacity
             style={[s.novaSugestaoBtn, { backgroundColor: dados.cor }]}
-            onPress={() => recomendar(humorSelecionado)} // chama recomendar com o mesmo humor
+            onPress={() => recomendar(humorSelecionado)}
             activeOpacity={0.8}
           >
             <Text style={s.novaSugestaoTexto}>🔀  Outra sugestão</Text>
@@ -585,7 +581,6 @@ export default function App() {
       {/* Renderização condicional: só mostra o componente da tela atual */}
       {tela === 'inicio'   && <TelaInicio onNavegar={setTela} />}
       {tela === 'humor'    && <TelaHumor onVoltar={() => setTela('inicio')} />}
-
       {tela === 'sugestao' && <TelaSugestao onVoltar={() => setTela('inicio')} />}
     </View>
   );
@@ -721,7 +716,6 @@ const s = StyleSheet.create({
     paddingVertical: 22,
     alignItems: 'center',
     justifyContent: 'center',
-   
     shadowColor: C.roxo,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
@@ -840,7 +834,6 @@ const s = StyleSheet.create({
     letterSpacing: 0.4,
   },
 
-
   abas: {
     flexDirection: 'row',
     backgroundColor: C.bgCard,
@@ -857,7 +850,7 @@ const s = StyleSheet.create({
     borderRadius: 13,
   },
   abaAtiva: {
-    backgroundColor: C.roxo, a
+    backgroundColor: C.roxo,
   },
   abaTexto: {
     fontSize: 15,
