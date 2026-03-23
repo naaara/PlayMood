@@ -1,66 +1,50 @@
-// ═══════════════════════════════════════════════════════════════
-//  MoodPlay — App de recomendação de músicas e filmes por humor
-// ═══════════════════════════════════════════════════════════════
-
 // Importações do Expo e React Native
 // StatusBar: barra de status do celular (hora, bateria, etc.)
 import { StatusBar } from 'expo-status-bar';
 
-// Hooks do React:
-// useState  → guarda e atualiza valores na tela (ex: humor selecionado)
-// useRef    → guarda valores sem re-renderizar (ex: animações)
-// useEffect → executa código quando algo muda (ex: ao abrir a tela)
+
 import { useState, useRef, useEffect } from 'react';
 
 // Componentes do React Native:
 import {
-  StyleSheet,        // cria os estilos do app
-  Text,              // exibe textos
-  View,              // caixa/container genérico (como uma <div>)
-  TouchableOpacity,  // botão que escurece ao toque
-  ScrollView,        // container com scroll
-  Linking,           // abre links externos (YouTube, telefone, etc.)
-  Animated,          // permite criar animações
-  TextInput,         // campo de texto para o usuário digitar
-  Alert,             // exibe alertas/pop-ups
-  KeyboardAvoidingView, // empurra o conteúdo para cima quando o teclado abre
-  Platform,          // detecta se o app está rodando no iOS ou Android
+  StyleSheet,        
+  Text,              
+  View,              
+  TouchableOpacity,  
+  ScrollView,        
+  Linking,           
+  Animated,          
+  TextInput,         
+  Alert,             
+  KeyboardAvoidingView, 
+  Platform,          
 } from 'react-native';
 
 
-// ─── PALETA DE CORES ───────────────────────────────────────────
-// Objeto com todas as cores usadas no app.
-// Usar um objeto assim facilita manter consistência visual:
-// basta trocar a cor aqui e ela muda em todo o app.
+
 const C = {
-  bg: '#0D0618',          // fundo principal (roxo quase preto)
-  bgCard: '#1A0D2E',      // fundo dos cards e caixas
-  roxoEscuro: '#2D1B4E',  // roxo bem escuro
-  roxo: '#6B2FBE',        // roxo principal (botões, destaques)
-  roxoMedio: '#8B45D4',   // roxo médio
-  lilas: '#B57BEE',       // lilás (links, textos secundários)
-  lilasClaro: '#D4ADFF',  // lilás claro (labels de formulário)
-  lilasUltra: '#EDD9FF',  // lilás muito claro
-  branco: '#FFFFFF',      // branco puro
-  brancoSuave: '#F0E6FF', // branco com leve tom roxo
-  cinza: '#8A7A9B',       // cinza (textos secundários, placeholders)
-  cinzaEscuro: '#3D2D52', // cinza escuro (bordas)
-  rosa: '#E040FB',        // rosa/magenta (ícone de sugestão)
-  azulRoxo: '#7C4DFF',    // azul-roxo (não usado diretamente, reservado)
+  bg: '#0D0618',          
+  bgCard: '#1A0D2E',      
+  roxoEscuro: '#2D1B4E',  
+  roxo: '#6B2FBE',        
+  roxoMedio: '#8B45D4',   
+  lilas: '#B57BEE',       
+  lilasClaro: '#D4ADFF',  
+  lilasUltra: '#EDD9FF',  
+  branco: '#FFFFFF',      
+  brancoSuave: '#F0E6FF', 
+  cinza: '#8A7A9B',       
+  cinzaEscuro: '#3D2D52', 
+  rosa: '#E040FB',        
+  azulRoxo: '#7C4DFF',    
 };
 
-
-// ─── DADOS DE RECOMENDAÇÕES ────────────────────────────────────
-// Objeto principal com todas as informações de cada humor.
-// Cada humor tem: emoji, nome, cor visual, mensagem motivacional,
-// lista de músicas com nome e link, e lista de filmes.
 const recomendacoes = {
 
-  // ── Humor: Feliz ──
   feliz: {
     emoji: '😄',
     label: 'Feliz',
-    cor: '#F7C948',        // amarelo dourado
+    cor: '#F7C948',        
     corEscura: '#B8860B',
     mensagem: 'Seu dia já está bom, aproveite algo leve e divertido!',
     musicas: [
@@ -78,11 +62,10 @@ const recomendacoes = {
     filmes: ['Divertida Mente', 'Se Beber, Não Case', 'Ace Ventura', 'Mamma Mia', 'SuperBad'],
   },
 
-  // ── Humor: Triste ──
   triste: {
     emoji: '😢',
     label: 'Triste',
-    cor: '#7C9EFF',        // azul suave
+    cor: '#7C9EFF',        
     corEscura: '#2A3F8F',
     mensagem: 'Tudo bem ter dias difíceis. Escolha algo que acolha seu momento.',
     musicas: [
@@ -100,11 +83,10 @@ const recomendacoes = {
     filmes: ['Diário de uma Paixão', 'Ela', 'Minhas Mães e Meu Pai', 'A Culpa é das Estrelas', 'Manchester à Beira-Mar'],
   },
 
-  // ── Humor: Animado ──
   animado: {
     emoji: '🔥',
     label: 'Animado',
-    cor: '#FF6B6B',        // vermelho vibrante
+    cor: '#FF6B6B',      
     corEscura: '#8B0000',
     mensagem: 'Você está com energia! Aproveite algo intenso e empolgante.',
     musicas: [
@@ -122,11 +104,10 @@ const recomendacoes = {
     filmes: ['Mad Max: Estrada da Fúria', 'John Wick', 'Homem-Aranha no Aranhaverso', 'Top Gun: Maverick', 'Vingadores: Ultimato'],
   },
 
-  // ── Humor: Calmo ──
   calmo: {
     emoji: '🌙',
     label: 'Calmo',
-    cor: '#4DD8A0',        // verde menta suave
+    cor: '#4DD8A0',        
     corEscura: '#1A5C40',
     mensagem: 'Hoje combina com paz, conforto e tranquilidade.',
     musicas: [
@@ -146,10 +127,7 @@ const recomendacoes = {
 };
 
 
-// ─── FUNÇÃO: SORTEIO SEM REPETIR ──────────────────────────────
-// Sorteia um índice aleatório da lista, garantindo que não
-// repita o mesmo índice da última vez (ultimoIndex).
-// Isso evita que a mesma música apareça duas vezes seguidas.
+// Sorteia um índice aleatório da lista, evitando que a mesma música apareça duas vezes seguidas
 function sortearSemRepetir(lista, ultimoIndex) {
   // Se a lista tem só 1 item, não há escolha — retorna 0
   if (lista.length === 1) return 0;
@@ -164,16 +142,10 @@ function sortearSemRepetir(lista, ultimoIndex) {
 }
 
 
-// ═══════════════════════════════════════════════════════════════
-//  COMPONENTE: TelaInicio
-//  Tela principal do app com o menu de navegação.
-//  Recebe: onNavegar — função que muda a tela atual
-// ═══════════════════════════════════════════════════════════════
-function TelaInicio({ onNavegar }) {
-  // Valores animados para entrada da tela (fade + slide de baixo)
-  const fadeAnim = useRef(new Animated.Value(0)).current;  // começa invisível (0)
-  const slideAnim = useRef(new Animated.Value(30)).current; // começa 30px abaixo
 
+function TelaInicio({ onNavegar }) {
+  const fadeAnim = useRef(new Animated.Value(0)).current;  
+  const slideAnim = useRef(new Animated.Value(30)).current; 
   // Executa a animação de entrada assim que a tela aparece
   useEffect(() => {
     Animated.parallel([
@@ -182,24 +154,23 @@ function TelaInicio({ onNavegar }) {
       // Slide: de 30px abaixo para posição original, com efeito mola
       Animated.spring(slideAnim, { toValue: 0, friction: 7, useNativeDriver: true }),
     ]).start();
-  }, []); // [] = executa só uma vez, quando o componente monta
-
+  }, []); 
   return (
     // Animated.View permite aplicar animações ao container
     <Animated.View style={[s.telaInicio, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
 
-      {/* ── Cabeçalho com logo e título ── */}
+      {}
       <View style={s.headerGlowContainer}>
-        {/* Efeito de brilho roxo atrás do título (círculo com opacidade baixa) */}
+        {}
         <View style={s.headerGlow} />
         <Text style={s.appTitulo}>MoodPlay</Text>
         <Text style={s.appSubtitulo}>Música e filmes para cada momento seu</Text>
       </View>
 
-      {/* ── Menu com 3 opções ── */}
+      {}
       <View style={s.menuContainer}>
 
-        {/* Botão: Como estou me sentindo → vai para tela de humor */}
+        {/* Botão: Como estou me sentindo(vai para tela de humor) */}
         <TouchableOpacity style={s.menuBotao} onPress={() => onNavegar('humor')} activeOpacity={0.8}>
           <View style={[s.menuIcone, { backgroundColor: C.roxo + '33' }]}>
             <Text style={s.menuIconeEmoji}>🎵</Text>
@@ -211,7 +182,7 @@ function TelaInicio({ onNavegar }) {
           <Text style={s.menuSeta}>›</Text>
         </TouchableOpacity>
 
-        {/* Botão: Sugerir música/filme → vai para tela de sugestão */}
+        {/* Botão: Sugerir música/filme(vai para tela de sugestão) */}
         <TouchableOpacity style={s.menuBotao} onPress={() => onNavegar('sugestao')} activeOpacity={0.8}>
           <View style={[s.menuIcone, { backgroundColor: C.rosa + '33' }]}>
             <Text style={s.menuIconeEmoji}>💌</Text>
@@ -229,16 +200,6 @@ function TelaInicio({ onNavegar }) {
   );
 }
 
-
-// ═══════════════════════════════════════════════════════════════
-//  COMPONENTE: BotaoHumor
-//  Botão individual de cada humor no grid 2x2.
-//  Recebe:
-//    humor     → chave do humor ('feliz', 'triste', etc.)
-//    dados     → objeto com emoji, cor, label daquele humor
-//    selecionado → se este botão está ativo
-//    onPress   → função chamada ao tocar
-// ═══════════════════════════════════════════════════════════════
 function BotaoHumor({ humor, dados, selecionado, onPress }) {
   // Animação de escala ao pressionar (efeito de "apertar")
   const scale = useRef(new Animated.Value(1)).current;
@@ -279,29 +240,22 @@ function BotaoHumor({ humor, dados, selecionado, onPress }) {
       Animated.spring(scale, { toValue: 1, friction: 3, useNativeDriver: true }),
     ]).start();
 
-    // Chama a função do componente pai com o humor escolhido
     onPress(humor);
   };
 
   return (
-    // Aplica as duas animações juntas: escala do toque + pulso contínuo
     <Animated.View style={[s.botaoHumorWrapper, { transform: [{ scale }, { scale: pulso }] }]}>
       <TouchableOpacity
         onPress={handlePress}
         activeOpacity={0.85}
         style={[
           s.botaoHumor,
-          // Muda a borda para a cor do humor quando selecionado
           { borderColor: selecionado ? dados.cor : C.cinzaEscuro },
-          // Adiciona fundo levemente colorido quando selecionado
-          // O '22' no final do hex é opacidade ~13%
           selecionado && { backgroundColor: dados.cor + '22' },
         ]}
       >
         <Text style={s.botaoEmoji}>{dados.emoji}</Text>
-        {/* Texto fica colorido quando selecionado */}
         <Text style={[s.botaoLabel, selecionado && { color: dados.cor }]}>{dados.label}</Text>
-        {/* Ponto indicador só aparece quando selecionado */}
         {selecionado && <View style={[s.indicador, { backgroundColor: dados.cor }]} />}
       </TouchableOpacity>
     </Animated.View>
@@ -309,19 +263,15 @@ function BotaoHumor({ humor, dados, selecionado, onPress }) {
 }
 
 
-// ═══════════════════════════════════════════════════════════════
-//  COMPONENTE: TelaHumor
-//  Tela onde o usuário escolhe o humor e recebe recomendações.
-//  Recebe: onVoltar — função para voltar à tela inicial
-// ═══════════════════════════════════════════════════════════════
+
 function TelaHumor({ onVoltar }) {
   // Estado do humor atual selecionado (começa vazio)
   const [humorSelecionado, setHumorSelecionado] = useState('');
 
-  // Música sorteada atualmente (objeto com nome e url)
+  // Música sorteada atualmente 
   const [musica, setMusica] = useState(null);
 
-  // Filme sorteado atualmente
+  // Filme sorteado 
   const [filme, setFilme] = useState('');
 
   // Guarda o último índice sorteado por humor, para não repetir
@@ -330,7 +280,6 @@ function TelaHumor({ onVoltar }) {
     feliz: -1, triste: -1, animado: -1, calmo: -1,
   });
 
-  // Animações do card de resultado (fade + slide)
   const fadeCard = useRef(new Animated.Value(0)).current;
   const slideCard = useRef(new Animated.Value(40)).current;
 
@@ -352,7 +301,6 @@ function TelaHumor({ onVoltar }) {
     // Salva o índice sorteado para este humor (para não repetir na próxima)
     setUltimosIndices(prev => ({ ...prev, [humor]: iMusica }));
 
-    // Reinicia as animações do card e executa novamente
     fadeCard.setValue(0);
     slideCard.setValue(40);
     Animated.parallel([
@@ -361,7 +309,6 @@ function TelaHumor({ onVoltar }) {
     ]).start();
   }
 
-  // Atalho para os dados do humor atual (null se nenhum selecionado)
   const dados = humorSelecionado ? recomendacoes[humorSelecionado] : null;
 
   return (
@@ -375,21 +322,19 @@ function TelaHumor({ onVoltar }) {
       <Text style={s.telaTitulo}>Como você está?</Text>
       <Text style={s.telaSubtitulo}>Escolha seu humor do momento</Text>
 
-      {/* Grid 2x2 dos botões de humor */}
-      {/* Object.entries transforma o objeto em array de [chave, valor] */}
       <View style={s.grid}>
         {Object.entries(recomendacoes).map(([humor, d]) => (
           <BotaoHumor
-            key={humor}            // chave única para o React
-            humor={humor}          // ex: 'feliz'
-            dados={d}              // objeto com cor, emoji, etc.
-            selecionado={humorSelecionado === humor} // true se este está ativo
-            onPress={recomendar}   // função de clique
+            key={humor}            
+            humor={humor}          
+            dados={d}              
+            selecionado={humorSelecionado === humor} 
+            onPress={recomendar}   
           />
         ))}
       </View>
 
-      {/* Card de resultado — só aparece quando há humor e música selecionados */}
+      {/* Card de resultado, só aparece quando há humor e música selecionados */}
       {humorSelecionado !== '' && musica && dados && (
         <Animated.View style={[s.card, { opacity: fadeCard, transform: [{ translateY: slideCard }] }]}>
 
@@ -414,7 +359,7 @@ function TelaHumor({ onVoltar }) {
               <Text style={[s.linkTexto, { color: dados.cor }]} numberOfLines={2}>
                 {musica.nome}
               </Text>
-              {/* Botão de play redondo */}
+              {/* Botão de play */}
               <View style={[s.playBtn, { backgroundColor: dados.cor }]}>
                 <Text style={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>▶</Text>
               </View>
@@ -424,7 +369,6 @@ function TelaHumor({ onVoltar }) {
           {/* Seção de filme */}
           <View style={s.cardSecao}>
             <Text style={s.cardLabel}>🎬  FILME SUGERIDO</Text>
-            {/* '18' no hex = opacidade ~9% (fundo bem suave) */}
             <View style={[s.filmeTag, { backgroundColor: dados.cor + '18' }]}>
               <Text style={[s.filmeTexto, { color: C.brancoSuave }]}>🍿  {filme}</Text>
             </View>
@@ -445,19 +389,12 @@ function TelaHumor({ onVoltar }) {
         </Animated.View>
       )}
 
-      {/* Espaço extra no final para não ficar colado na borda */}
       <View style={{ height: 40 }} />
     </ScrollView>
   );
 }
 
 
-
-// ═══════════════════════════════════════════════════════════════
-//  COMPONENTE: TelaSugestao
-//  Formulário para o usuário sugerir músicas ou filmes para o app.
-//  Recebe: onVoltar — função para voltar à tela inicial
-// ═══════════════════════════════════════════════════════════════
 function TelaSugestao({ onVoltar }) {
   // Tipo de sugestão: 'musica' ou 'filme'
   const [tipo, setTipo] = useState('musica');
@@ -566,7 +503,7 @@ function TelaSugestao({ onVoltar }) {
               maxLength={100}        // limite de caracteres
             />
 
-            {/* Campo de link — aparece APENAS quando tipo é música */}
+            {/* Campo de link, aparece APENAS quando tipo é música */}
             {tipo === 'musica' && (
               <>
                 <Text style={s.inputLabel}>Link do YouTube ou Spotify</Text>
@@ -576,8 +513,8 @@ function TelaSugestao({ onVoltar }) {
                   placeholderTextColor={C.cinza}
                   value={link}
                   onChangeText={setLink}
-                  autoCapitalize="none" // não coloca maiúscula automática
-                  keyboardType="url"    // teclado otimizado para URLs
+                  autoCapitalize="none" 
+                  keyboardType="url"    
                   maxLength={300}
                 />
               </>
@@ -593,7 +530,6 @@ function TelaSugestao({ onVoltar }) {
                 return (
                   <TouchableOpacity
                     key={h}
-                    // Aplica cor do humor quando este chip está selecionado
                     style={[
                       s.humorChip,
                       humor === h && { backgroundColor: d.cor + '33', borderColor: d.cor },
@@ -615,7 +551,7 @@ function TelaSugestao({ onVoltar }) {
               <Text style={s.enviarTexto}>Enviar sugestão 🚀</Text>
             </TouchableOpacity>
 
-            {/* Mensagem de sucesso — aparece após o envio com animação de fade */}
+            {/* Mensagem de sucesso, aparece após o envio com animação */}
             {enviado && (
               <Animated.View style={[s.sucessoCard, { opacity: successAnim }]}>
                 <Text style={s.sucessoTexto}>
@@ -636,12 +572,6 @@ function TelaSugestao({ onVoltar }) {
   );
 }
 
-
-// ═══════════════════════════════════════════════════════════════
-//  COMPONENTE PRINCIPAL: App
-//  Ponto de entrada do aplicativo. Controla qual tela está visível
-//  usando um estado simples de navegação (sem biblioteca de rotas).
-// ═══════════════════════════════════════════════════════════════
 export default function App() {
   // 'tela' guarda qual tela está aberta: 'inicio', 'humor' ou 'sugestao'
   const [tela, setTela] = useState('inicio');
@@ -662,21 +592,15 @@ export default function App() {
 }
 
 
-// ═══════════════════════════════════════════════════════════════
-//  ESTILOS
-//  StyleSheet.create otimiza os estilos para o React Native.
-//  Os estilos são separados por seção para facilitar a leitura.
-// ═══════════════════════════════════════════════════════════════
+
 const s = StyleSheet.create({
 
-  // ── Container principal do app ──
   appContainer: {
-    flex: 1,                                          // ocupa toda a tela
-    backgroundColor: C.bg,                            // fundo roxo escuro
-    paddingTop: Platform.OS === 'ios' ? 50 : 35,     // espaço para a notch/status bar
+    flex: 1,                                          
+    backgroundColor: C.bg,                            
+    paddingTop: Platform.OS === 'ios' ? 50 : 35,     
   },
 
-  // ── Tela inicial ──
   telaInicio: {
     flex: 1,
     paddingHorizontal: 22,
@@ -686,14 +610,13 @@ const s = StyleSheet.create({
     marginTop: 20,
     marginBottom: 40,
   },
-  // Círculo decorativo que cria o efeito de brilho atrás do título
   headerGlow: {
-    position: 'absolute',  // posicionado em relação ao pai
+    position: 'absolute',  
     width: 200,
     height: 200,
-    borderRadius: 100,     // círculo perfeito
+    borderRadius: 100,     
     backgroundColor: C.roxo,
-    opacity: 0.15,         // muito transparente para efeito suave
+    opacity: 0.15,         
     top: -30,
   },
   appEmoji: {
@@ -702,9 +625,9 @@ const s = StyleSheet.create({
   },
   appTitulo: {
     fontSize: 42,
-    fontWeight: '900',     // peso máximo de fonte
+    fontWeight: '900',     
     color: C.branco,
-    letterSpacing: -1.5,   // letras mais juntas para visual moderno
+    letterSpacing: -1.5,   
   },
   appSubtitulo: {
     fontSize: 14,
@@ -714,12 +637,11 @@ const s = StyleSheet.create({
     letterSpacing: 0.3,
   },
 
-  // ── Menu da tela inicial ──
   menuContainer: {
-    gap: 14, // espaçamento entre os botões do menu
+    gap: 14, 
   },
   menuBotao: {
-    flexDirection: 'row',    // itens em linha (ícone + texto + seta)
+    flexDirection: 'row',    
     alignItems: 'center',
     backgroundColor: C.bgCard,
     borderRadius: 20,
@@ -739,7 +661,7 @@ const s = StyleSheet.create({
     fontSize: 24,
   },
   menuTextoContainer: {
-    flex: 1, // ocupa o espaço restante entre o ícone e a seta
+    flex: 1, 
   },
   menuBotaoTitulo: {
     fontSize: 16,
@@ -757,14 +679,13 @@ const s = StyleSheet.create({
     fontWeight: '300',
   },
 
-  // ── Estilos gerais (compartilhados entre telas) ──
   telaConteudo: {
     paddingHorizontal: 20,
     paddingTop: 10,
   },
   voltarBotao: {
     marginBottom: 20,
-    alignSelf: 'flex-start', // alinha à esquerda mesmo com pai centralizado
+    alignSelf: 'flex-start', 
   },
   voltarTexto: {
     fontSize: 16,
@@ -784,15 +705,14 @@ const s = StyleSheet.create({
     marginBottom: 28,
   },
 
-  // ── Grid e botões de humor ──
   grid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',    // quebra linha quando não cabe (grid 2x2)
+    flexWrap: 'wrap',    
     gap: 12,
     marginBottom: 24,
   },
   botaoHumorWrapper: {
-    width: '47%', // dois por linha com gap entre eles
+    width: '47%', 
   },
   botaoHumor: {
     backgroundColor: C.bgCard,
@@ -801,12 +721,12 @@ const s = StyleSheet.create({
     paddingVertical: 22,
     alignItems: 'center',
     justifyContent: 'center',
-    // Sombra roxa para profundidade
+   
     shadowColor: C.roxo,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
-    elevation: 6, // sombra no Android
+    elevation: 6, 
   },
   botaoEmoji: {
     fontSize: 38,
@@ -818,7 +738,6 @@ const s = StyleSheet.create({
     color: C.brancoSuave,
     letterSpacing: 0.3,
   },
-  // Ponto colorido que indica o humor selecionado
   indicador: {
     width: 8,
     height: 8,
@@ -826,11 +745,10 @@ const s = StyleSheet.create({
     marginTop: 10,
   },
 
-  // ── Card de resultado ──
   card: {
     backgroundColor: C.bgCard,
     borderRadius: 24,
-    overflow: 'hidden',  // garante que os filhos respeitem o borderRadius
+    overflow: 'hidden',  
     borderWidth: 1,
     borderColor: C.cinzaEscuro,
     shadowColor: C.roxo,
@@ -860,15 +778,13 @@ const s = StyleSheet.create({
     paddingHorizontal: 18,
     paddingTop: 16,
   },
-  // Label em caixa alta estilo "rótulo de seção"
   cardLabel: {
     fontSize: 10,
     fontWeight: '800',
     color: C.cinza,
-    letterSpacing: 1.5,  // espaçamento largo para texto em caixa alta
+    letterSpacing: 1.5,  
     marginBottom: 10,
   },
-  // Botão/link da música com borda e ícone de play
   linkBotao: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -876,16 +792,15 @@ const s = StyleSheet.create({
     borderRadius: 14,
     paddingHorizontal: 14,
     paddingVertical: 12,
-    backgroundColor: C.roxoEscuro + '88', // '88' = opacidade ~53%
+    backgroundColor: C.roxoEscuro + '88', 
     gap: 10,
   },
   linkTexto: {
     fontSize: 14,
     fontWeight: '700',
-    flex: 1,        // ocupa o espaço disponível
+    flex: 1,        
     lineHeight: 20,
   },
-  // Botão circular de play
   playBtn: {
     width: 30,
     height: 30,
@@ -926,24 +841,23 @@ const s = StyleSheet.create({
   },
 
 
-  // ── Abas (Música / Filme) na tela de sugestão ──
   abas: {
     flexDirection: 'row',
     backgroundColor: C.bgCard,
     borderRadius: 16,
-    padding: 4,       // espaço interno para as abas não colarem na borda
+    padding: 4,       
     marginBottom: 24,
     borderWidth: 1,
     borderColor: C.cinzaEscuro,
   },
   aba: {
-    flex: 1,          // cada aba ocupa metade do espaço
+    flex: 1,          
     paddingVertical: 12,
     alignItems: 'center',
     borderRadius: 13,
   },
   abaAtiva: {
-    backgroundColor: C.roxo, // fundo roxo indica a aba selecionada
+    backgroundColor: C.roxo, a
   },
   abaTexto: {
     fontSize: 15,
@@ -951,10 +865,9 @@ const s = StyleSheet.create({
     color: C.cinza,
   },
   abaTextoAtivo: {
-    color: C.branco, // texto branco na aba ativa
+    color: C.branco, 
   },
 
-  // ── Formulário de sugestão ──
   formulario: {
     gap: 6,
   },
@@ -976,7 +889,6 @@ const s = StyleSheet.create({
     fontSize: 15,
     color: C.branco,
   },
-  // Grid dos chips de humor no formulário
   humorGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -1002,7 +914,6 @@ const s = StyleSheet.create({
     fontWeight: '700',
     color: C.brancoSuave,
   },
-  // Botão de envio com sombra roxa
   enviarBtn: {
     backgroundColor: C.roxo,
     borderRadius: 16,
@@ -1021,9 +932,8 @@ const s = StyleSheet.create({
     fontSize: 16,
     letterSpacing: 0.4,
   },
-  // Card verde de confirmação após envio
   sucessoCard: {
-    backgroundColor: '#4CAF5022', // verde com baixa opacidade
+    backgroundColor: '#4CAF5022', 
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
@@ -1031,7 +941,7 @@ const s = StyleSheet.create({
     marginTop: 16,
   },
   sucessoTexto: {
-    color: '#81C784', // verde claro
+    color: '#81C784', 
     fontWeight: '600',
     fontSize: 14,
     textAlign: 'center',
