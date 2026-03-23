@@ -23,9 +23,6 @@ O app sorteia uma música e um filme aleatoriamente para o humor escolhido. O bo
 
 ---
 
-O índice da última música sorteada é guardado por humor no estado `ultimosIndices`, garantindo que ao trocar de humor e voltar, a lógica ainda funcione corretamente.
-
----
 
 ## 🗂️ Estrutura do código
 
