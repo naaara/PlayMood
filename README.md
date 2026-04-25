@@ -1,45 +1,35 @@
 # 🎵 MoodPlay
 
-Aplicativo desenvolvido em **React Native com Expo** que recomenda músicas e filmes com base no humor do usuário.
+Aplicativo desenvolvido em **React Native com Expo** que utiliza APIs globais de entretenimento para recomendar músicas e filmes com base no humor do usuário.
 
 ---
 
 ## 📱 Sobre o aplicativo
 
-O MoodPlay é um app simples e interativo onde o usuário escolhe como está se sentindo e recebe sugestões personalizadas de músicas (com link direto para o YouTube) e filmes. O app também permite que o próprio usuário sugira músicas para serem adicionadas.
+O MoodPlay é uma plataforma interativa que conecta o estado emocional do usuário a conteúdos culturais. Ao selecionar um humor, o aplicativo realiza requisições em tempo real para buscar trilhas sonoras e produções cinematográficas, oferecendo uma experiência dinâmica e personalizada.
 
 ---
 
 ## ⚙️ Funcionalidades
 
-### 1. Recomendação por humor
-O usuário seleciona um dos quatro humores disponíveis:
-- 😄 **Feliz** — músicas animadas e comédias
-- 😢 **Triste** — músicas calmas e dramas acolhedores
-- 🔥 **Animado** — batidas pesadas e filmes de ação
-- 🌙 **Calmo** — músicas instrumentais e filmes tranquilos
+### Recomendações Reais (Integração com APIs)
+O app consome dados em tempo real através de:
+- **Last.fm API**: Para buscar faixas musicais baseadas em tags de sentimentos.
+- **TMDB API**: Para sugerir filmes baseados em gêneros cinematográficos específicos para cada vibe.
 
-O app sorteia uma música e um filme aleatoriamente para o humor escolhido. O botão **"Outra sugestão"** gera uma nova recomendação sem repetir a música anterior.
+
+
+### Seleção de Humores Expandida
+- 😄 **Feliz** — Músicas alto-astral e comédias.
+- 😢 **Triste** — Músicas melancólicas e dramas.
+- 🔥 **Animado** — Batidas energéticas e filmes de ação.
+- 🌙 **Calmo** — Trilhas relaxantes e fantasia.
+- 😰 **Ansioso** — Músicas suaves para descompressão.
+- 😡 **Bravo** — Músicas intensas (Rock/Metal) e suspenses.
+
+### Recurso "Mudar Sugestões"
+Caso o usuário queira explorar novas opções, o botão **🔄 Mudar sugestões** realiza uma nova chamada às APIs, sorteando resultados diferentes sem a necessidade de reiniciar o fluxo.
 
 ---
 
-
-## 🗂️ Estrutura do código
-
-```
-App.js
-│
-├── Paleta de cores (objeto C)
-├── Dados de recomendações (objeto recomendacoes)
-├── sortearSemRepetir()       → algoritmo de sorteio
-│
-├── TelaInicio                → menu principal com navegação
-├── BotaoHumor                → botão animado de cada humor
-├── TelaHumor                 → seleção de humor + card de resultado
-├── TelaSugestao              → formulário de sugestão de música
-│
-└── App (principal)           → controla qual tela está visível
-```
-
-
-
+## 🗂️ Estrutura do Projeto
