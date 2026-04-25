@@ -30,6 +30,3 @@ O app consome dados em tempo real através de:
 ### Recurso "Mudar Sugestões"
 Caso o usuário queira explorar novas opções, o botão **🔄 Mudar sugestões** realiza uma nova chamada às APIs, sorteando resultados diferentes sem a necessidade de reiniciar o fluxo.
 
----
-
-## 🗂️ Estrutura do Projeto
